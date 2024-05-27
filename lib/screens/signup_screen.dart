@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:ndialog/ndialog.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  const SignUpScreen({Key? key});
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -66,97 +66,85 @@ class _SignUpScreenState extends State<SignUpScreen> {
               height: 10,
             ),
             ElevatedButton(
-                onPressed: () async {
-                  var fullName = fullNameController.text.trim();
-                  var email = emailController.text.trim();
-                  var password = passwordController.text.trim();
-                  var confirmPass = confirmController.text.trim();
+              onPressed: () async {
+                var fullName = fullNameController.text.trim();
+                var email = emailController.text.trim();
+                var password = passwordController.text.trim();
+                var confirmPass = confirmController.text.trim();
 
-                  if (fullName.isEmpty ||
-                      email.isEmpty ||
-                      password.isEmpty ||
-                      confirmPass.isEmpty) {
-                    // show error toast
+                if (fullName.isEmpty ||
+                    email.isEmpty ||
+                    password.isEmpty ||
+                    confirmPass.isEmpty) {
+                  Fluttertoast.showToast(msg: 'Please fill all fields');
+                  return;
+                }
 
-                    Fluttertoast.showToast(msg: 'Please fill all fields');
-                    return;
+                if (password.length < 6) {
+                  Fluttertoast.showToast(
+                      msg: 'Weak Password, at least 6 characters are required');
+                  return;
+                }
+
+                if (password != confirmPass) {
+                  Fluttertoast.showToast(msg: 'Passwords do not match');
+                  return;
+                }
+
+                ProgressDialog progressDialog = ProgressDialog(
+                  context,
+                  title: const Text('Signing Up'),
+                  message: const Text('Please wait'),
+                );
+
+                progressDialog.show();
+                try {
+                  FirebaseAuth auth = FirebaseAuth.instance;
+
+                  UserCredential userCredential =
+                      await auth.createUserWithEmailAndPassword(
+                          email: email, password: password);
+
+                  if (userCredential.user != null) {
+                    DatabaseReference userRef =
+                        FirebaseDatabase.instance.reference().child('users');
+
+                    String uid = userCredential.user!.uid;
+                    int dt = DateTime.now().millisecondsSinceEpoch;
+
+                    print('Creating user with UserTypeId 1');
+
+                    await userRef.child(uid).set({
+                      'fullName': fullName,
+                      'email': email,
+                      'uid': uid,
+                      'dt': dt,
+                      'profileImage': '',
+                      'UserTypeId':'0',
+                    });
+
+
+                    Fluttertoast.showToast(msg: 'Success');
+                    Navigator.of(context).pop();
+                  } else {
+                    Fluttertoast.showToast(msg: 'Failed');
                   }
 
-                  if (password.length < 6) {
-                    // show error toast
-                    Fluttertoast.showToast(
-                        msg:
-                        'Weak Password, at least 6 characters are required');
-
-                    return;
+                  progressDialog.dismiss();
+                } on FirebaseAuthException catch (e) {
+                  progressDialog.dismiss();
+                  if (e.code == 'email-already-in-use') {
+                    Fluttertoast.showToast(msg: 'Email is already in Use');
+                  } else if (e.code == 'weak-password') {
+                    Fluttertoast.showToast(msg: 'Password is weak');
                   }
-
-                  if (password != confirmPass) {
-                    // show error toast
-                    Fluttertoast.showToast(msg: 'Passwords do not match');
-
-                    return;
-                  }
-
-                  // request to firebase auth
-
-                  ProgressDialog progressDialog = ProgressDialog(
-                    context,
-                    title: const  Text('Signing Up'),
-                    message: const Text('Please wait'),
-                  );
-
-                  progressDialog.show();
-                  try {
-
-
-                    FirebaseAuth auth = FirebaseAuth.instance;
-
-                    UserCredential userCredential =
-                    await auth.createUserWithEmailAndPassword(
-                        email: email, password: password);
-
-                    if (userCredential.user != null) {
-
-                      // store user information in Realtime database
-
-                      DatabaseReference userRef = FirebaseDatabase.instance.reference().child( 'users');
-
-                      String uid = userCredential.user!.uid;
-                      int dt = DateTime.now().millisecondsSinceEpoch;
-
-                      await userRef.child(uid).set({
-                        'fullName': fullName,
-                        'email': email,
-                        'uid': uid,
-                        'dt': dt,
-                        'profileImage': ''
-
-                      });
-
-
-                      Fluttertoast.showToast(msg: 'Success');
-
-                      Navigator.of(context).pop();
-                    } else {
-                      Fluttertoast.showToast(msg: 'Failed');
-                    }
-
-                    progressDialog.dismiss();
-
-                  } on FirebaseAuthException catch (e) {
-                    progressDialog.dismiss();
-                    if (e.code == 'email-already-in-use') {
-                      Fluttertoast.showToast(msg: 'Email is already in Use');
-                    } else if (e.code == 'weak-password') {
-                      Fluttertoast.showToast(msg: 'Password is weak');
-                    }
-                  } catch (e) {
-                    progressDialog.dismiss();
-                    Fluttertoast.showToast(msg: 'Something went wrong');
-                  }
-                },
-                child: const Text('Sign Up')),
+                } catch (e) {
+                  progressDialog.dismiss();
+                  Fluttertoast.showToast(msg: 'Something went wrong');
+                }
+              },
+              child: const Text('Sign Up'),
+            ),
             const SizedBox(
               height: 10,
             ),

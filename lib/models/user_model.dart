@@ -4,6 +4,7 @@ class UserModel {
   late String email;
   late String profileImage;
   late int dt;
+  late int userTypeId;
 
   UserModel({
     required this.uid,
@@ -11,6 +12,7 @@ class UserModel {
     required this.email,
     required this.profileImage,
     required this.dt,
+    required this.userTypeId,
   });
 
   static UserModel fromMap(Map<String, dynamic> map) {
@@ -20,6 +22,7 @@ class UserModel {
       email: map['email'],
       profileImage: map['profileImage'],
       dt: map['dt'],
+      userTypeId: map['userTypeId'] ?? 0,
     );
   }
 }
