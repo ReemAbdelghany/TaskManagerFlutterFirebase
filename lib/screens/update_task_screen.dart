@@ -1,25 +1,23 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:task_manager/models/task_model.dart';
 
 class UpdateTaskScreen extends StatefulWidget {
   final TaskModel task;
+  final Function(TaskModel) onTaskUpdated;
 
-  const UpdateTaskScreen({super.key, required this.task});
+  const UpdateTaskScreen({Key? key, required this.task, required this.onTaskUpdated}) : super(key: key);
 
   @override
-  _UpdateTaskScreenState createState() => _UpdateTaskScreenState();
+  State<UpdateTaskScreen> createState() => _UpdateTaskScreenState();
 }
 
 class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
-  var nameController = TextEditingController();
+  var taskController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    nameController.text = widget.task.taskName;
+    taskController.text = widget.task.taskName;
   }
 
   @override
@@ -33,36 +31,31 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         child: Column(
           children: [
             TextField(
-              controller: nameController,
-              decoration: const InputDecoration(hintText: 'Task Name'),
+              controller: taskController,
+              decoration: const InputDecoration(
+                hintText: 'Task Name',
+              ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             ElevatedButton(
-                onPressed: () async {
-                  var taskName = nameController.text.trim();
-                  if (taskName.isEmpty) {
-                    Fluttertoast.showToast(msg: 'Please provide task name');
-                    return;
-                  }
+              onPressed: () {
+                String updatedTaskName = taskController.text.trim();
 
-                  User? user = FirebaseAuth.instance.currentUser;
+                if (updatedTaskName.isEmpty) {
+                  return;
+                }
 
-                  if (user != null) {
-                    DatabaseReference taskRef = FirebaseDatabase.instance
-                        .reference()
-                        .child('tasks')
-                        .child(user.uid)
-                        .child(widget.task.taskId);
+                TaskModel updatedTask = TaskModel(
+                  taskId: widget.task.taskId,
+                  taskName: updatedTaskName,
+                  dt: widget.task.dt,
+                );
 
-                    await taskRef.update({
-                      'taskName': taskName,
-
-                    });
-                  }
-                },
-                child: const Text('Update')),
+                widget.onTaskUpdated(updatedTask);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Update'),
+            ),
           ],
         ),
       ),

@@ -1,7 +1,7 @@
 class TaskModel {
-  late String taskId;
-  late String taskName;
-  late int dt;
+  String taskId;
+  String taskName;
+  int dt;
 
   TaskModel({
     required this.taskId,
@@ -9,7 +9,15 @@ class TaskModel {
     required this.dt,
   });
 
-  static TaskModel fromMap(Map<String, dynamic> map) {
+  Map<String, dynamic> toMap() {
+    return {
+      'taskId': taskId,
+      'taskName': taskName,
+      'dt': dt,
+    };
+  }
+
+  factory TaskModel.fromMap(Map<String, dynamic> map) {
     return TaskModel(
       taskId: map['taskId'],
       taskName: map['taskName'],
