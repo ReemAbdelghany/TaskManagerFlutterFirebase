@@ -34,14 +34,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  _pickImageFromGallery() async {
-    XFile? xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+  _pickImageFromGallery( ImageSource source) async {
+    XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if (xFile == null) return;
+    if (file == null) return;
 
-    final tempImage = File(xFile.path);
+    // final tempImage = File(xFile.path);
 
-    imageFile = tempImage;
+    imageFile = File(file.path);
     showLocalFile = true;
     setState(() {});
 
@@ -54,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
     progressDialog.show();
     try {
-      var fileName = '${userModel!.email}.jpg';
+      var fileName = DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
 
       UploadTask uploadTask = FirebaseStorage.instance.ref().child('profile_images').child(fileName).putFile(imageFile!);
 
@@ -64,6 +64,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       print(profileImageUrl);
 
+      DatabaseReference userRef = FirebaseDatabase.instance.reference().child('users').child(userModel!.uid);
+      
+      await userRef.update({
+        'profileImage':profileImageUrl,
+      });
+
+
+
       progressDialog.dismiss();
     } catch (e) {
       progressDialog.dismiss();
@@ -71,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  _pickImageFromCamera() async {
+  _pickImageFromCamera(ImageSource source) async {
     XFile? xFile = await ImagePicker().pickImage(source: ImageSource.camera);
 
     if (xFile == null) return;
@@ -111,11 +119,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   CircleAvatar(
                       radius: 80,
-                      backgroundImage: showLocalFile
-                          ? FileImage(imageFile!) as ImageProvider
-                          : userModel!.profileImage == ''
-                          ? const NetworkImage('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGrQoGh518HulzrSYOTee8UO517D_j6h4AYQ&usqp=CAU')
-                          : NetworkImage(userModel!.profileImage)),
+                      backgroundImage: showLocalFile == false ? NetworkImage(
+                        userModel!.profileImage == '' ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGrQoGh518HulzrSYOTee8UO517D_j6h4AYQ&usqp=CAU'
+                          :
+                          userModel!.profileImage
+                          ):
+                          FileImage(imageFile!) as ImageProvider
+
+                          ),
                   IconButton(
                     icon: const Icon(Icons.camera_alt),
                     onPressed: () {
@@ -131,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     leading: const Icon(Icons.image),
                                     title: const Text('From Gallery'),
                                     onTap: () {
-                                      _pickImageFromGallery();
+                                      _pickImageFromGallery(ImageSource.gallery);
                                       Navigator.of(context).pop();
                                     },
                                   ),
@@ -139,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     leading: const Icon(Icons.camera_alt),
                                     title: const Text('From Camera'),
                                     onTap: () {
-                                      _pickImageFromCamera();
+                                      _pickImageFromCamera(ImageSource.camera);
                                       Navigator.of(context).pop();
                                     },
                                   ),
