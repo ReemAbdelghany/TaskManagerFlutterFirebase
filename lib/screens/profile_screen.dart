@@ -24,6 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   File? imageFile;
   bool showLocalFile = false;
 
+  // Fetch user details from Firebase database
   _getUserDetails() async {
     DatabaseEvent event = await userRef!.once();
     DataSnapshot snapshot = event.snapshot;
@@ -34,19 +35,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  _pickImageFromGallery( ImageSource source) async {
+  // Pick an image from the gallery
+  _pickImageFromGallery(ImageSource source) async {
     XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (file == null) return;
-
-    // final tempImage = File(xFile.path);
 
     imageFile = File(file.path);
     showLocalFile = true;
     setState(() {});
 
-    // upload to firebase storage
-
+    // Upload the image to Firebase storage
     ProgressDialog progressDialog = ProgressDialog(
       context,
       title: const Text('Uploading !!!'),
@@ -62,15 +61,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       String profileImageUrl = await snapshot.ref.getDownloadURL();
 
-      print(profileImageUrl);
-
+      // Update the user's profile image URL in the database
       DatabaseReference userRef = FirebaseDatabase.instance.reference().child('users').child(userModel!.uid);
-      
+
       await userRef.update({
         'profileImage':profileImageUrl,
       });
-
-
 
       progressDialog.dismiss();
     } catch (e) {
@@ -79,6 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  // Pick an image from the camera
   _pickImageFromCamera(ImageSource source) async {
     XFile? xFile = await ImagePicker().pickImage(source: ImageSource.camera);
 
@@ -106,91 +103,97 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Profile'),
-        ),
-        body: userModel == null
-            ? const Center(child: CircularProgressIndicator())
-            : Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                      radius: 80,
-                      backgroundImage: showLocalFile == false ? NetworkImage(
-                        userModel!.profileImage == '' ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGrQoGh518HulzrSYOTee8UO517D_j6h4AYQ&usqp=CAU'
-                          :
-                          userModel!.profileImage
-                          ):
-                          FileImage(imageFile!) as ImageProvider
-
-                          ),
-                  IconButton(
-                    icon: const Icon(Icons.camera_alt),
-                    onPressed: () {
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (context) {
-                            return Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ListTile(
-                                    leading: const Icon(Icons.image),
-                                    title: const Text('From Gallery'),
-                                    onTap: () {
-                                      _pickImageFromGallery(ImageSource.gallery);
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  ListTile(
-                                    leading: const Icon(Icons.camera_alt),
-                                    title: const Text('From Camera'),
-                                    onTap: () {
-                                      _pickImageFromCamera(ImageSource.camera);
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                          });
-                    },
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          userModel!.fullName,
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        Text(
-                          userModel!.email,
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        Text(
-                          'Joined ${getHumanReadableDate(userModel!.dt)}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
+      appBar: AppBar(
+        title: const Text('Profile'),
+      ),
+      body: userModel == null
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                // Display user profile image
+                CircleAvatar(
+                  radius: 80,
+                  backgroundImage: showLocalFile == false
+                      ? NetworkImage(
+                      userModel!.profileImage == ''
+                          ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGrQoGh518HulzrSYOTee8UO517D_j6h4AYQ&usqp=CAU'
+                          : userModel!.profileImage
+                  )
+                      : FileImage(imageFile!) as ImageProvider,
+                ),
+                // Button to pick image from camera or gallery
+                IconButton(
+                  icon: const Icon(Icons.camera_alt),
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (context) {
+                          return Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListTile(
+                                  leading: const Icon(Icons.image),
+                                  title: const Text('From Gallery'),
+                                  onTap: () {
+                                    _pickImageFromGallery(ImageSource.gallery);
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.camera_alt),
+                                  title: const Text('From Camera'),
+                                  onTap: () {
+                                    _pickImageFromCamera(ImageSource.camera);
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                    );
+                  },
+                ),
+              ],
+            ),
+            // Display user details
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        userModel!.fullName,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        userModel!.email,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        'Joined ${getHumanReadableDate(userModel!.dt)}',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
+  // Convert timestamp to human-readable date format
   String getHumanReadableDate(int dt) {
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(dt);
 

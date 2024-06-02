@@ -5,6 +5,7 @@ import 'package:task_manager/screens/login_screen.dart';
 import 'package:task_manager/screens/profile_screen.dart';
 import 'package:task_manager/models/user_model.dart'; // Import the UserModel
 
+/// Represents the screen where an admin can view and manage the list of users.
 class AdminUserListScreen extends StatefulWidget {
   const AdminUserListScreen({Key? key});
 
@@ -15,12 +16,14 @@ class AdminUserListScreen extends StatefulWidget {
 class AdminUserListScreenState extends State<AdminUserListScreen> {
   DatabaseReference? userRef;
 
+  /// Initialize the screen and set the reference to the 'users' node in Firebase.
   @override
   void initState() {
     userRef = FirebaseDatabase.instance.reference().child('users');
     super.initState();
   }
 
+  /// Deletes a user from Firebase by their UID.
   void deleteUser(String uid) {
     userRef!.child(uid).remove().then((_) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -33,6 +36,7 @@ class AdminUserListScreenState extends State<AdminUserListScreen> {
     });
   }
 
+  /// Builds the UI for the admin user list screen.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
