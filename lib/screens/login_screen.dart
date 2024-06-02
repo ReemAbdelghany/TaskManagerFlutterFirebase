@@ -102,6 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// Retrieves the user type ID from Firebase.
   Future<int> getUserTypeId(String userId) async {
     DatabaseReference userTypeRef = FirebaseDatabase.instance.reference().child('users').child(userId).child('UserTypeId');
     DataSnapshot snapshot = await userTypeRef.get();

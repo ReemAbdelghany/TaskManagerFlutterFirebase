@@ -102,17 +102,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   FirebaseAuth auth = FirebaseAuth.instance;
 
                   UserCredential userCredential =
-                      await auth.createUserWithEmailAndPassword(
-                          email: email, password: password);
+                  await auth.createUserWithEmailAndPassword(
+                      email: email, password: password);
 
                   if (userCredential.user != null) {
                     DatabaseReference userRef =
-                        FirebaseDatabase.instance.reference().child('users');
+                    FirebaseDatabase.instance.reference().child('users');
 
                     String uid = userCredential.user!.uid;
                     int dt = DateTime.now().millisecondsSinceEpoch;
-
-                    print('Creating user with UserTypeId 1');
 
                     await userRef.child(uid).set({
                       'fullName': fullName,
@@ -122,7 +120,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       'profileImage': '',
                       'UserTypeId':'0',
                     });
-
 
                     Fluttertoast.showToast(msg: 'Success');
                     Navigator.of(context).pop();

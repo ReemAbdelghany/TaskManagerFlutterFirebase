@@ -45,7 +45,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     super.dispose();
   }
 
-
+  /// Loads tasks from local storage and synchronizes them if online.
   Future<void> loadTasks() async {
     tasks = await FileStorage.readTasks();
     setState(() {});
@@ -54,6 +54,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     }
   }
 
+  /// Synchronizes local tasks with the Firebase database.
   Future<void> synchronizeTasks() async {
     if (user != null) {
       DatabaseReference taskRef = FirebaseDatabase.instance.reference().child('tasks').child(user!.uid);
@@ -80,12 +81,14 @@ class _TaskListScreenState extends State<TaskListScreen> {
     }
   }
 
+  /// Queues an operation to be performed when the app goes online.
   Future<void> queueOperation(String type, TaskModel task) async {
     List<Map<String, dynamic>> operations = await FileStorage.readOperationQueue();
     operations.add({'type': type, 'task': task.toMap()});
     await FileStorage.saveOperationQueue(operations);
   }
 
+  /// Adds a new task locally and online if possible.
   Future<void> addTask(TaskModel task) async {
     tasks.add(task);
     await FileStorage.saveTasks(tasks);
@@ -98,6 +101,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     }
   }
 
+  /// Deletes a task locally and online if possible.
   Future<void> deleteTask(TaskModel task) async {
     tasks.remove(task); // Remove the task from the local list
     await FileStorage.saveTasks(tasks); // Save the updated task list locally
@@ -111,7 +115,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     }
   }
 
-
+  /// Updates a task locally and online if possible.
   Future<void> updateTask(TaskModel updatedTask) async {
     int index = tasks.indexWhere((task) => task.taskId == updatedTask.taskId);
     if (index != -1) {
@@ -251,6 +255,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
   }
 
+  /// Converts a timestamp to a human-readable date format.
   String getHumanReadableDate(int dt) {
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(dt);
     return DateFormat('dd MMM yyyy').format(dateTime);

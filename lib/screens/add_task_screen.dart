@@ -102,6 +102,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
+  /// Queues an operation for later synchronization when online.
   Future<void> queueOperation(String type, TaskModel task) async {
     List<Map<String, dynamic>> operations = await FileStorage.readOperationQueue();
     operations.add({'type': type, 'task': task.toMap()});
