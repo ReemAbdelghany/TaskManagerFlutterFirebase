@@ -1,10 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:task_manager/screens/admin_view_screen.dart';
 import 'package:task_manager/screens/signup_screen.dart';
-import 'package:task_manager/screens/task_list_screen.dart';
+import 'package:task_manager/screens/ar_drawing_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,93 +17,115 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const purpleColor = Color(0xFF5727B0);
+
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Login'),
+        backgroundColor: Colors.black,
+        title: const Text(
+          'Login',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                hintText: 'Email',
-              ),
-            ),
-            const SizedBox(height: 10,),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                hintText: 'Password',
-              ),
-            ),
-            const SizedBox(height: 10,),
-            ElevatedButton(
-              onPressed: () async {
-                var email = emailController.text.trim();
-                var password = passwordController.text.trim();
-                if (email.isEmpty || password.isEmpty) {
-                  Fluttertoast.showToast(msg: 'Please fill all fields');
-                  return;
-                }
-
-                try {
-                  FirebaseAuth auth = FirebaseAuth.instance;
-                  UserCredential userCredential = await auth.signInWithEmailAndPassword(email: email, password: password);
-
-                  if (userCredential.user != null) {
-                    // Retrieve user type from Firebase
-                    int userTypeId = await getUserTypeId(userCredential.user!.uid);
-
-                    if (userTypeId == 1) {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
-                        return const AdminUserListScreen(); // Navigate to admin user list screen
-                      }));
-                    } else {
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
-                        return const TaskListScreen();
-                      }));
-                    }
-                  }
-                } on FirebaseAuthException catch (e) {
-                  if (e.code == 'user-not-found') {
-                    Fluttertoast.showToast(msg: 'User not found');
-                  } else if (e.code == 'wrong-password') {
-                    Fluttertoast.showToast(msg: 'Wrong password');
-                  }
-                } catch (e) {
-                  Fluttertoast.showToast(msg: 'Something went wrong');
-                }
-              },
-              child: const Text('Login'),
-            ),
-            const SizedBox(height: 10,),
-            Row(
+      body: SingleChildScrollView( // Wrap with SingleChildScrollView
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text('Not Registered Yet'),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                      return const SignUpScreen();
-                    }));
-                  },
-                  child: const Text('Register Now'),
+                Image.asset(
+                  'lib/images/cropped_image.png',
+                  height: 200,
+                  width: 200,
                 ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Welcome to Displayd',
+                  style: TextStyle(
+                    color: purpleColor,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    hintText: 'Email',
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Password',
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    var email = emailController.text.trim();
+                    var password = passwordController.text.trim();
+                    if (email.isEmpty || password.isEmpty) {
+                      Fluttertoast.showToast(msg: 'Please fill all fields');
+                      return;
+                    }
+
+                    try {
+                      FirebaseAuth auth = FirebaseAuth.instance;
+                      UserCredential userCredential = await auth.signInWithEmailAndPassword(email: email, password: password);
+
+                      if (userCredential.user != null) {
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
+                          return const ArDrawingScreen();
+                        }));
+                      }
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'user-not-found') {
+                        Fluttertoast.showToast(msg: 'User not found');
+                      } else if (e.code == 'wrong-password') {
+                        Fluttertoast.showToast(msg: 'Wrong password');
+                      }
+                    } catch (e) {
+                      Fluttertoast.showToast(msg: 'Something went wrong');
+                    }
+                  },
+                  child: const Text('Login'),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Not Registered Yet?',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                          return const SignUpScreen();
+                        }));
+                      },
+                      child: const Text(
+                        'Register Now',
+                        style: TextStyle(color: purpleColor),
+                      ),
+                    ),
+                  ],
+                )
               ],
-            )
-          ],
+            ),
+          ),
         ),
       ),
     );
-  }
-
-  /// Retrieves the user type ID from Firebase.
-  Future<int> getUserTypeId(String userId) async {
-    DatabaseReference userTypeRef = FirebaseDatabase.instance.reference().child('users').child(userId).child('UserTypeId');
-    DataSnapshot snapshot = await userTypeRef.get();
-    return snapshot.value != null ? int.parse(snapshot.value.toString()) : 1; // Default to 1 if not found
   }
 }

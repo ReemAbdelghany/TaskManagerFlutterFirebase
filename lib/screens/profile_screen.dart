@@ -24,7 +24,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   File? imageFile;
   bool showLocalFile = false;
 
-  // Fetch user details from Firebase database
   _getUserDetails() async {
     DatabaseEvent event = await userRef!.once();
     DataSnapshot snapshot = event.snapshot;
@@ -35,7 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Pick an image from the gallery
   _pickImageFromGallery(ImageSource source) async {
     XFile? file = await ImagePicker().pickImage(source: ImageSource.gallery);
 
@@ -45,7 +43,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showLocalFile = true;
     setState(() {});
 
-    // Upload the image to Firebase storage
     ProgressDialog progressDialog = ProgressDialog(
       context,
       title: const Text('Uploading !!!'),
@@ -61,11 +58,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       String profileImageUrl = await snapshot.ref.getDownloadURL();
 
-      // Update the user's profile image URL in the database
       DatabaseReference userRef = FirebaseDatabase.instance.reference().child('users').child(userModel!.uid);
 
       await userRef.update({
-        'profileImage':profileImageUrl,
+        'profileImage': profileImageUrl,
       });
 
       progressDialog.dismiss();
@@ -75,7 +71,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // Pick an image from the camera
   _pickImageFromCamera(ImageSource source) async {
     XFile? xFile = await ImagePicker().pickImage(source: ImageSource.camera);
 
@@ -102,101 +97,235 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const purpleColor = Color(0xFF5727B0);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
-      body: userModel == null
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Row(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+        backgroundColor: Colors.black,
+        title: const Text(
+        'Profile',
+        style: TextStyle(color: Colors.white),
+    ),
+    ),
+    body: userModel == null
+    ? const Center(child: CircularProgressIndicator())
+        : SingleChildScrollView(
+    child: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+    Center(
+    child: Column(
+    children: [
+    CircleAvatar(
+    radius: 60,
+    backgroundImage: showLocalFile == false
+    ? NetworkImage(userModel!.profileImage == ''
+    ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGrQoGh518HulzrSYOTee8UO517D_j6h4AYQ&usqp=CAU'
+        : userModel!.profileImage)
+        : FileImage(imageFile!) as ImageProvider,
+    ),
+    IconButton(
+    icon: const Icon(Icons.camera_alt, color: Colors.white),
+    onPressed: () {
+    showModalBottomSheet(
+    context: context,
+    builder: (context) {
+    return Padding(
+    padding: const EdgeInsets.all(10),
+    child: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+    ListTile(
+    leading: const Icon(Icons.image),
+    title: const Text('From Gallery'),
+    onTap: () {
+    _pickImageFromGallery(ImageSource.gallery);
+    Navigator.of(context).pop();
+    },
+    ),
+    ListTile(
+    leading: const Icon(Icons.camera_alt),
+    title: const Text('From Camera'),
+    onTap: () {
+    _pickImageFromCamera(ImageSource.camera);
+    Navigator.of(context).pop();
+    },
+    ),
+    ],
+    ),
+    );
+    });
+    },
+    ),
+    ],
+    ),
+    ),
+    const SizedBox(height: 20),
+    Card(
+    color: Colors.grey[900],
+    child: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    Text(
+    userModel!.fullName,
+    style: const TextStyle(
+    fontSize: 22,
+    color: Colors.white,
+    fontWeight: FontWeight.bold),
+    ),
+    const SizedBox(height: 10),
+    Text(
+    userModel!.email,
+    style: const TextStyle(
+    fontSize: 18, color: Colors.white70),
+    ),
+    const SizedBox(height: 10),
+    Text(
+    'Joined ${getHumanReadableDate(userModel!.dt)}',
+    style: const TextStyle(
+    fontSize: 16, color: Colors.white70),
+    ),
+    ],
+    ),
+    ),
+    ),
+    const SizedBox(height: 20),
+    Card(
+    color: Colors.grey[900],
+    child: Padding(
+    padding: const EdgeInsets.all(16.0),
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    const Text(
+    'Bio',
+    style: TextStyle(
+    fontSize: 18,
+    color: purpleColor,
+    fontWeight: FontWeight.bold),
+    ),
+    const SizedBox(height: 10),
+    const Text(
+    'This is a sample bio. You can add your bio here.',
+    style: TextStyle(fontSize: 16, color: Colors.white),
+    ),
+    ],
+    ),
+    ),
+    ),
+    const SizedBox(height: 20),
+    Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    Expanded(
+    child: Card(
+    color: Colors.grey[900],
+    child: Padding(
+    padding: const EdgeInsets.all(8.0), // Updated padding here
+    child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    const Text(
+    'Friends (3)',
+    style: TextStyle(
+    fontSize: 18,
+    color: purpleColor,
+    fontWeight: FontWeight.bold),
+    ),
+    const SizedBox(height: 10),
+    Padding(
+    padding: const EdgeInsets.symmetric(vertical: 2.0), // Adjust vertical padding
+    child: ListTile(
+    leading: const Icon(Icons.person,
+    color: Colors.white),
+    title: const Text(
+    'Hana',
+      style: TextStyle(color: Colors.white,
+        fontSize: 13,),
+    ),
+    ),
+    ),
+    Padding(
+    padding: const EdgeInsets.symmetric(vertical: 2.0), // Adjust vertical padding
+    child: ListTile(
+    leading: const Icon(Icons.person,
+    color: Colors.white),
+    title: const Text(
+      'Jessie',
+      style: TextStyle(color: Colors.white,
+        fontSize: 13,),
+    ),
+    ),
+    ),
+    ],
+    ),
+    ),
+    ),
+    ),
+      const SizedBox(width: 10),
+      Expanded(
+        child: Card(
+          color: Colors.grey[900],
+          child: Padding(
+            padding: const EdgeInsets.all(8.0), // Updated padding here
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Display user profile image
-                CircleAvatar(
-                  radius: 80,
-                  backgroundImage: showLocalFile == false
-                      ? NetworkImage(
-                      userModel!.profileImage == ''
-                          ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGrQoGh518HulzrSYOTee8UO517D_j6h4AYQ&usqp=CAU'
-                          : userModel!.profileImage
-                  )
-                      : FileImage(imageFile!) as ImageProvider,
+                const Text(
+                  'Drawings',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: purpleColor,
+                      fontWeight: FontWeight.bold),
                 ),
-                // Button to pick image from camera or gallery
-                IconButton(
-                  icon: const Icon(Icons.camera_alt),
-                  onPressed: () {
-                    showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ListTile(
-                                  leading: const Icon(Icons.image),
-                                  title: const Text('From Gallery'),
-                                  onTap: () {
-                                    _pickImageFromGallery(ImageSource.gallery);
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.camera_alt),
-                                  title: const Text('From Camera'),
-                                  onTap: () {
-                                    _pickImageFromCamera(ImageSource.camera);
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                    );
-                  },
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2.0), // Adjust vertical padding
+                  child: ListTile(
+                    leading: const Icon(Icons.brush,
+                        color: Colors.white),
+                    title: const Text(
+                      'Drawing1',
+                      style: TextStyle(color: Colors.white,
+                        fontSize: 13,),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2.0), // Adjust vertical padding
+                  child: ListTile(
+                    leading: const Icon(Icons.brush,
+                        color: Colors.white),
+                    title: const Text(
+                      'Drawing2',
+                      style: TextStyle(color: Colors.white,
+                        fontSize: 13,),
+                    ),
+                  ),
                 ),
               ],
             ),
-            // Display user details
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        userModel!.fullName,
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        userModel!.email,
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        'Joined ${getHumanReadableDate(userModel!.dt)}',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
+    ],
+    ),
+    ],
+    ),
+    ),
+    ),
     );
   }
 
-  // Convert timestamp to human-readable date format
   String getHumanReadableDate(int dt) {
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(dt);
-
     return DateFormat('dd MMM yyyy').format(dateTime);
   }
 }
+

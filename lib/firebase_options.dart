@@ -41,51 +41,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCJoZyEoOnxJ3z2DKyNE9RETM4I_uCOMW0',
-    appId: '1:271038415168:web:30c3698943c8a7eb763aa5',
-    messagingSenderId: '271038415168',
-    projectId: 'mema2-ac698',
-    authDomain: 'mema2-ac698.firebaseapp.com',
-    databaseURL: 'https://mema2-ac698-default-rtdb.firebaseio.com',
-    storageBucket: 'mema2-ac698.appspot.com',
+    apiKey: 'AIzaSyCEvBOYhtdu-vzb1bqXU0MXCcA32L_H2gM',
+    appId: '1:1073539569536:web:b5c87f5d0a33d40f399365',
+    messagingSenderId: '1073539569536',
+    projectId: 'displayd-6bce3',
+    authDomain: 'displayd-6bce3.firebaseapp.com',
+    storageBucket: 'displayd-6bce3.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBdtdAjbzu6dk1ax-RyOlu4x1RIm_qm01E',
-    appId: '1:271038415168:android:5660e98f8c53f3e6763aa5',
-    messagingSenderId: '271038415168',
-    projectId: 'mema2-ac698',
-    databaseURL: 'https://mema2-ac698-default-rtdb.firebaseio.com',
-    storageBucket: 'mema2-ac698.appspot.com',
+    apiKey: 'AIzaSyCMkQsQFjoGzp93Q0195R7eb1FYPjCxmVo',
+    appId: '1:1073539569536:android:049c2ed978b2f911399365',
+    messagingSenderId: '1073539569536',
+    projectId: 'displayd-6bce3',
+    storageBucket: 'displayd-6bce3.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCj_gBlv5yezdF7LczZOGRJ1N-B93CABE8',
-    appId: '1:271038415168:ios:70087ebd0c3438bd763aa5',
-    messagingSenderId: '271038415168',
-    projectId: 'mema2-ac698',
-    databaseURL: 'https://mema2-ac698-default-rtdb.firebaseio.com',
-    storageBucket: 'mema2-ac698.appspot.com',
+    apiKey: 'AIzaSyAsDbrA2F5AO7gj-ocuqbzelgJcMxVI0Xc',
+    appId: '1:1073539569536:ios:718a28b329f4d63f399365',
+    messagingSenderId: '1073539569536',
+    projectId: 'displayd-6bce3',
+    storageBucket: 'displayd-6bce3.appspot.com',
     iosBundleId: 'com.example.taskManager',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCj_gBlv5yezdF7LczZOGRJ1N-B93CABE8',
-    appId: '1:271038415168:ios:70087ebd0c3438bd763aa5',
-    messagingSenderId: '271038415168',
-    projectId: 'mema2-ac698',
-    databaseURL: 'https://mema2-ac698-default-rtdb.firebaseio.com',
-    storageBucket: 'mema2-ac698.appspot.com',
+    apiKey: 'AIzaSyAsDbrA2F5AO7gj-ocuqbzelgJcMxVI0Xc',
+    appId: '1:1073539569536:ios:718a28b329f4d63f399365',
+    messagingSenderId: '1073539569536',
+    projectId: 'displayd-6bce3',
+    storageBucket: 'displayd-6bce3.appspot.com',
     iosBundleId: 'com.example.taskManager',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCJoZyEoOnxJ3z2DKyNE9RETM4I_uCOMW0',
-    appId: '1:271038415168:web:35ef7ec14acfc2e0763aa5',
-    messagingSenderId: '271038415168',
-    projectId: 'mema2-ac698',
-    authDomain: 'mema2-ac698.firebaseapp.com',
-    databaseURL: 'https://mema2-ac698-default-rtdb.firebaseio.com',
-    storageBucket: 'mema2-ac698.appspot.com',
+    apiKey: 'AIzaSyCEvBOYhtdu-vzb1bqXU0MXCcA32L_H2gM',
+    appId: '1:1073539569536:web:a4046661ea6fcede399365',
+    messagingSenderId: '1073539569536',
+    projectId: 'displayd-6bce3',
+    authDomain: 'displayd-6bce3.firebaseapp.com',
+    storageBucket: 'displayd-6bce3.appspot.com',
   );
+
 }
